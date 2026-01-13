@@ -1,0 +1,22 @@
+name: Daily News Digest
+
+on:
+  schedule:
+    - cron: "0 8 * * *"  # UTC 08:00 = KST 17:00
+  workflow_dispatch:     # 수동 실행도 가능
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: pip install -r requirements.txt
+      - name: Run news summary
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python news_summary.py
